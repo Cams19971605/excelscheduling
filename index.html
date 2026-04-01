@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel Christchurch Ltd</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #161920;
+    --bg3: #1e2129;
+    --bg4: #252830;
+    --border: #2e3140;
+    --border2: #3a3e52;
+    --text: #e8eaf0;
+    --text2: #9da3b8;
+    --text3: #6b7090;
+    --accent: #00d4ff;
+    --accent2: #0099cc;
+    --green: #22c55e;
+    --orange: #f97316;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --amber: #f59e0b;
+    --cyan-dim: rgba(0,212,255,0.08);
+    --cyan-border: rgba(0,212,255,0.25);
+    --font: 'Barlow', sans-serif;
+    --mono: 'DM Mono', monospace;
+    --condensed: 'Barlow Condensed', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; }
+  
+  /* Layout */
+  .app { display: flex; height: 100vh; overflow: hidden; }
+  .sidebar { width: 220px; min-width: 220px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  
+  /* Sidebar */
+  .sidebar-logo { padding: 20px 16px 16px; border-bottom: 1px solid var(--border); }
+  .logo-text { font-family: var(--condensed); font-size: 22px; font-weight: 700; letter-spacing: 1px; color: var(--accent); }
+  .logo-sub { font-size: 10px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; font-family: var(--mono); }
+  .sidebar-nav { padding: 12px 8px; flex: 1; }
+  .nav-section { font-size: 10px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; font-family: var(--mono); padding: 8px 8px 4px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 6px; cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 500; transition: all 0.15s; margin-bottom: 2px; }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--cyan-dim); color: var(--accent); border: 1px solid var(--cyan-border); }
+  .nav-icon { width: 16px; height: 16px; opacity: 0.8; flex-shrink: 0; }
+  .nav-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 10px; font-family: var(--mono); }
+  
+  /* Top bar */
+  .topbar { height: 56px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; }
+  .topbar-title { font-family: var(--condensed); font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .topbar-date { font-family: var(--mono); font-size: 12px; color: var(--text3); margin-left: 8px; }
+  .topbar-spacer { flex: 1; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #00b8e0; }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+  .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+  .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .btn-danger:hover { background: rgba(239,68,68,0.25); }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  
+  /* Content */
+  .content { flex: 1; overflow-y: auto; padding: 20px; }
+  
+  /* Dashboard */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; font-family: var(--mono); margin-bottom: 8px; }
+  .stat-value { font-size: 32px; font-weight: 700; font-family: var(--condensed); line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+  .stat-accent { color: var(--accent); }
+  .stat-green { color: var(--green); }
+  .stat-red { color: var(--red); }
+  .stat-orange { color: var(--orange); }
+  
+  /* Calendar nav */
+  .cal-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .cal-nav-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); width: 30px; height: 30px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.15s; }
+  .cal-nav-btn:hover { background: var(--bg4); color: var(--text); }
+  .cal-month { font-family: var(--condensed); font-size: 20px; font-weight: 700; }
+  .view-toggle { display: flex; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .view-btn { padding: 6px 14px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text2); background: transparent; border: none; font-family: var(--font); transition: all 0.15s; }
+  .view-btn.active { background: var(--accent); color: #000; }
+  
+  /* Month grid */
+  .month-grid { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .month-header { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--bg3); }
+  .month-dow { padding: 10px; text-align: center; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; font-family: var(--mono); border-bottom: 1px solid var(--border); }
+  .month-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .month-day { min-height: 80px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 6px; cursor: pointer; transition: background 0.15s; position: relative; }
+  .month-day:hover { background: var(--bg3); }
+  .month-day.today { background: var(--cyan-dim); }
+  .month-day.other-month .day-num { color: var(--text3); opacity: 0.4; }
+  .day-num { font-size: 13px; font-weight: 600; color: var(--text2); font-family: var(--mono); margin-bottom: 4px; }
+  .month-day.today .day-num { color: var(--accent); }
+  .day-job-pill { font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; font-weight: 500; }
+  .day-more { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+  
+  /* Day view */
+  .day-view { display: grid; grid-template-columns: 60px 1fr; gap: 0; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .time-col { border-right: 1px solid var(--border); }
+  .time-slot { height: 60px; border-bottom: 1px solid var(--border); padding: 4px 8px; font-size: 10px; color: var(--text3); font-family: var(--mono); }
+  .day-col { position: relative; }
+  .day-slots { }
+  .day-slot { height: 60px; border-bottom: 1px solid var(--border); }
+  .day-slot:hover { background: rgba(0,212,255,0.03); }
+  .job-block { position: absolute; left: 4px; right: 4px; border-radius: 6px; padding: 6px 8px; cursor: pointer; overflow: hidden; border: 1px solid; transition: opacity 0.15s; }
+  .job-block:hover { opacity: 0.9; }
+  .job-block-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .job-block-sub { font-size: 10px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  
+  /* Workers grid */
+  .workers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .worker-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .worker-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .worker-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+  .worker-name { font-size: 15px; font-weight: 600; }
+  .worker-role { font-size: 12px; color: var(--text3); }
+  .worker-detail { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+  .worker-detail svg { color: var(--text3); flex-shrink: 0; }
+  .worker-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { font-size: 10px; padding: 3px 8px; border-radius: 4px; font-family: var(--mono); font-weight: 500; }
+  .tag-blue { background: rgba(59,130,246,0.15); color: #93c5fd; }
+  .tag-green { background: rgba(34,197,94,0.15); color: #86efac; }
+  .tag-purple { background: rgba(168,85,247,0.15); color: #d8b4fe; }
+  .tag-amber { background: rgba(245,158,11,0.15); color: #fcd34d; }
+  .tag-cyan { background: var(--cyan-dim); color: var(--accent); border: 1px solid var(--cyan-border); }
+  .sync-toggle { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .toggle { position: relative; width: 36px; height: 20px; cursor: pointer; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--bg4); border-radius: 10px; transition: 0.2s; }
+  .toggle-slider::before { content: ''; position: absolute; height: 14px; width: 14px; left: 3px; bottom: 3px; background: var(--text3); border-radius: 50%; transition: 0.2s; }
+  .toggle input:checked + .toggle-slider { background: var(--accent2); }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(16px); background: var(--accent); }
+  .sync-label { font-size: 11px; color: var(--text2); font-family: var(--mono); }
+  
+  /* Jobs table */
+  .jobs-table { width: 100%; border-collapse: collapse; background: var(--bg2); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .jobs-table th { padding: 10px 14px; text-align: left; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; font-family: var(--mono); background: var(--bg3); border-bottom: 1px solid var(--border); }
+  .jobs-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  .jobs-table tr:last-child td { border-bottom: none; }
+  .jobs-table tr:hover td { background: var(--bg3); }
+  .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-family: var(--mono); font-weight: 500; }
+  .status-scheduled { background: rgba(59,130,246,0.15); color: #93c5fd; }
+  .status-inprogress { background: rgba(249,115,22,0.15); color: #fdba74; }
+  .status-completed { background: rgba(34,197,94,0.15); color: #86efac; }
+  .status-onhold { background: rgba(107,112,144,0.15); color: var(--text2); }
+  .status-cancelled { background: rgba(239,68,68,0.1); color: #fca5a5; text-decoration: line-through; }
+  .priority-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .priority-low { background: var(--text3); }
+  .priority-normal { background: var(--blue); }
+  .priority-urgent { background: var(--red); }
+  
+  /* Modal */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(3px); }
+  .modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 12px; width: 540px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-family: var(--condensed); font-size: 20px; font-weight: 700; }
+  .modal-close { background: none; border: none; color: var(--text3); font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+  .modal-close:hover { background: var(--bg4); color: var(--text); }
+  .modal-body { padding: 20px 24px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; font-family: var(--mono); margin-bottom: 6px; display: block; }
+  .form-input { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: 6px; padding: 9px 12px; color: var(--text); font-family: var(--font); font-size: 13px; outline: none; transition: border-color 0.15s; }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input option { background: var(--bg2); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+  
+  /* Job detail */
+  .job-detail-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+  .job-detail-title { font-family: var(--condensed); font-size: 22px; font-weight: 700; }
+  .detail-section { background: var(--bg3); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+  .detail-row { display: flex; align-items: flex-start; margin-bottom: 8px; gap: 10px; }
+  .detail-row:last-child { margin-bottom: 0; }
+  .detail-key { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-family: var(--mono); min-width: 90px; padding-top: 1px; }
+  .detail-val { font-size: 13px; color: var(--text); }
+  
+  /* Filters bar */
+  .filters-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-select { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; color: var(--text2); font-family: var(--font); font-size: 12px; outline: none; cursor: pointer; }
+  .search-input { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; color: var(--text); font-family: var(--font); font-size: 12px; outline: none; width: 200px; }
+  .search-input::placeholder { color: var(--text3); }
+  .search-input:focus { border-color: var(--accent); }
+  
+  /* Section heading */
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-title { font-family: var(--condensed); font-size: 18px; font-weight: 700; }
+  
+  /* Worker color swatch */
+  .color-swatch { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { width: 60px; min-width: 60px; }
+    .sidebar-logo, .nav-section, .nav-item span, .logo-sub { display: none; }
+    .nav-icon { margin: 0 auto; }
+    .nav-item { justify-content: center; padding: 10px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+  
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  
+  /* Notification toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; z-index: 200; font-size: 13px; transform: translateY(80px); opacity: 0; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-icon { font-size: 16px; }
+  
+  /* Gcal badge */
+  .gcal-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(66,133,244,0.15); color: #7cb3ff; font-family: var(--mono); border: 1px solid rgba(66,133,244,0.3); }
+  
+  /* Empty state */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-state-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-state-text { font-size: 14px; }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text">⚡ EXCEL</div>
+      <div class="logo-sub">Excel Christchurch Ltd</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="showPage('schedule')">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+        <span>Schedule</span>
+      </div>
+      <div class="nav-item" onclick="showPage('jobs')">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <span>Jobs</span>
+        <span class="nav-badge" id="urgent-badge">0</span>
+      </div>
+      <div class="nav-item" onclick="showPage('workers')">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.87"/></svg>
+        <span>Workers</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div id="page-title" class="topbar-title">Dashboard</div>
+      <div id="page-date" class="topbar-date"></div>
+      <div class="topbar-spacer"></div>
+      <button class="btn btn-ghost btn-sm" id="btn-gcal" onclick="showGcalConfig()" style="display:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+        Calendar Setup
+      </button>
+      <button class="btn btn-primary btn-sm" id="btn-add-job" onclick="openJobModal()" style="display:none;">
+        + New Job
+      </button>
+      <button class="btn btn-primary btn-sm" id="btn-add-worker" onclick="openWorkerModal()" style="display:none;">
+        + Add Worker
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="content">
+      <!-- Pages rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Job saved successfully</span>
+</div>
+
+<!-- Modals rendered by JS -->
+<div id="modal-container"></div>
+
+<script>
+// ============================================================
+// PERMISSIONS (all open — login removed temporarily)
+// ============================================================
+function canManageWorkers() { return true; }
+function canManageJobs() { return true; }
+function canAccessCalendarSetup() { return true; }
+
+const SUPABASE_URL = 'https://qgssqxqjoedwnrnmevlw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnc3NxeHFqb2Vkd25ybm1ldmx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1ODYzOTgsImV4cCI6MjA5MDE2MjM5OH0.G5Hk9xvNnkGzAtquXC_XL7SRF3EFOHEyO2NDIapjt0Q';
+
+const sbHeaders = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': `Bearer ${SUPABASE_KEY}`,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation',
+};
+
+async function sbGet(table, params = '') {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { headers: sbHeaders });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function sbInsert(table, data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST', headers: sbHeaders, body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const rows = await res.json();
+  return rows[0];
+}
+
+async function sbUpdate(table, id, data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH', headers: sbHeaders, body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const rows = await res.json();
+  return rows[0];
+}
+
+async function sbDelete(table, id) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'DELETE', headers: { ...sbHeaders, 'Prefer': 'return=minimal' }
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+// Map DB row (snake_case) → app object (camelCase)
+function mapJob(row) {
+  return {
+    id: row.id,
+    client: row.client,
+    company: row.company || '',
+    phone: row.phone || '',
+    location: row.location,
+    description: row.description || '',
+    type: row.type,
+    priority: row.priority,
+    date: row.date,
+    start: row.start_time,
+    end: row.end_time,
+    workerId: row.worker_id,
+    status: row.status,
+    equipment: row.equipment || '',
+    notes: row.notes || '',
+    gcalEventId: row.gcal_event_id || null,
+    reminderMinutes: row.reminder_minutes !== undefined ? row.reminder_minutes : 60,
+    createdBy: row.created_by || null,
+    createdByName: row.created_by_name || null,
+  };
+}
+
+function mapWorker(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    role: row.role,
+    phone: row.phone || '',
+    email: row.email || '',
+    color: row.color || '#00d4ff',
+    skills: row.skills || [],
+    gcalEmail: row.gcal_email || '',
+    gcalId: row.gcal_id || '',
+    gcalSync: row.gcal_sync || false,
+    gcalAccessToken: row.gcal_access_token || null,
+    gcalTokenExpiry: row.gcal_token_expiry || null,
+  };
+}
+
+function jobToDb(data) {
+  return {
+    client: data.client,
+    company: data.company || null,
+    phone: data.phone || null,
+    location: data.location,
+    description: data.description || null,
+    type: data.type,
+    priority: data.priority,
+    date: data.date,
+    start_time: data.start,
+    end_time: data.end,
+    worker_id: data.workerId || null,
+    status: data.status,
+    equipment: data.equipment || null,
+    notes: data.notes || null,
+    gcal_event_id: data.gcalEventId || null,
+    reminder_minutes: data.reminderMinutes !== undefined ? data.reminderMinutes : 60,
+    created_by: data.createdBy || null,
+    created_by_name: data.createdByName || null,
+  };
+}
+
+function workerToDb(data) {
+  return {
+    name: data.name,
+    role: data.role,
+    phone: data.phone || null,
+    email: data.email || null,
+    color: data.color,
+    skills: data.skills || [],
+    gcal_email: data.gcalEmail || null,
+    gcal_id: data.gcalId || null,
+    gcal_sync: data.gcalSync || false,
+  };
+}
+
+// ============================================================
+// DATA (loaded from Supabase)
+// ============================================================
+const today = new Date();
+today.setHours(0,0,0,0);
+
+let workers = [];
+let jobs = [];
+let currentPage = 'dashboard';
+let currentView = 'month';
+let viewDate = new Date(today);
+let editingJobId = null;
+let editingWorkerId = null;
+
+// ============================================================
+// UTILS
+// ============================================================
+function getWorker(id) { return workers.find(w => w.id === id); }
+function todayStr() { return today.toISOString().split('T')[0]; }
+function formatDate(ds) {
+  const [y,m,d] = ds.split('-');
+  const dt = new Date(y, m-1, d);
+  return dt.toLocaleDateString('en-NZ', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+}
+function monthName(d) { return d.toLocaleString('default',{month:'long'}); }
+function initials(name) { return name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2); }
+
+function toast(msg, icon='✓') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = icon;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function workerColor(id) {
+  const w = getWorker(id);
+  return w ? w.color : '#888';
+}
+
+function colorWithAlpha(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function statusClass(s) {
+  return { 'Scheduled':'scheduled', 'In Progress':'inprogress', 'Completed':'completed', 'On Hold':'onhold', 'Cancelled':'cancelled' }[s] || 'scheduled';
+}
+function priorityClass(p) {
+  return { 'Low':'low', 'Normal':'normal', 'Urgent':'urgent' }[p] || 'normal';
+}
+
+function jobTypeColor(type) {
+  return { 'Service':'#3b82f6', 'Install':'#a855f7', 'Maintenance':'#22c55e', 'Breakdown':'#ef4444' }[type] || '#888';
+}
+
+function getJobsForDate(dateStr) {
+  return jobs.filter(j => j.date === dateStr);
+}
+
+function urgentCount() { return jobs.filter(j => j.priority === 'Urgent' && j.status !== 'Completed' && j.status !== 'Cancelled').length; }
+
+// ============================================================
+// NAV
+// ============================================================
+function showPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const items = document.querySelectorAll('.nav-item');
+  const map = { dashboard: 0, schedule: 1, jobs: 2, workers: 3 };
+  if (items[map[page]]) items[map[page]].classList.add('active');
+
+  const titles = { dashboard: 'Dashboard', schedule: 'Schedule', jobs: 'Jobs', workers: 'Workers' };
+  document.getElementById('page-title').textContent = titles[page] || page;
+  document.getElementById('page-date').textContent = '';
+  document.getElementById('btn-add-job').style.display = (page === 'jobs') ? '' : 'none';
+  document.getElementById('btn-add-worker').style.display = (page === 'workers') ? '' : 'none';
+  document.getElementById('btn-gcal').style.display = (page === 'workers') ? '' : 'none';
+  document.getElementById('urgent-badge').textContent = urgentCount();
+
+  const renders = { dashboard: renderDashboard, schedule: renderSchedule, jobs: renderJobs, workers: renderWorkers };
+  if (renders[page]) renders[page]();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const todayJobs = getJobsForDate(todayStr());
+  const weekJobs = jobs.filter(j => {
+    const jd = new Date(j.date); const tw = new Date(today);
+    const we = new Date(today); we.setDate(we.getDate()+7);
+    return jd >= tw && jd <= we;
+  });
+  const availWorkers = workers.length;
+  const urgent = urgentCount();
+
+  let recentJobs = [...jobs].sort((a,b) => b.id-a.id).slice(0,5);
+
+  document.getElementById('content').innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Jobs Today</div>
+        <div class="stat-value stat-accent">${todayJobs.length}</div>
+        <div class="stat-sub">${todayJobs.filter(j=>j.status==='Completed').length} completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value">${weekJobs.length}</div>
+        <div class="stat-sub">next 7 days</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Workers</div>
+        <div class="stat-value stat-green">${availWorkers}</div>
+        <div class="stat-sub">${workers.filter(w=>w.gcalSync).length} calendar synced</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Urgent</div>
+        <div class="stat-value ${urgent > 0 ? 'stat-red' : 'stat-green'}">${urgent}</div>
+        <div class="stat-sub">active urgent jobs</div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">Today's Jobs — ${today.toLocaleDateString('en-NZ',{weekday:'long',day:'numeric',month:'long'})}</div>
+      <button class="btn btn-ghost btn-sm" onclick="showPage('schedule')">View Schedule →</button>
+    </div>
+
+    ${todayJobs.length === 0 ? `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No jobs scheduled for today</div></div>` : `
+    <table class="jobs-table" style="margin-bottom:24px;">
+      <thead><tr>
+        <th>Client</th><th>Type</th><th>Time</th><th>Worker</th><th>Status</th><th>Priority</th>
+      </tr></thead>
+      <tbody>
+        ${todayJobs.map(j => {
+          const w = getWorker(j.workerId);
+          return `<tr style="cursor:pointer;" onclick="viewJob(${j.id})">
+            <td><div style="font-weight:600;">${j.client}</div><div style="font-size:11px;color:var(--text3);">${j.location.split(',')[0]}</div></td>
+            <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border-radius:4px;background:${colorWithAlpha(jobTypeColor(j.type),0.15)};color:${jobTypeColor(j.type)};">${j.type}</span></td>
+            <td style="font-family:var(--mono);font-size:12px;">${j.start}–${j.end}</td>
+            <td>${w ? `<div style="display:flex;align-items:center;gap:8px;"><div style="width:24px;height:24px;border-radius:50%;background:${w.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#000;">${initials(w.name)}</div><span style="font-size:12px;">${w.name.split(' ')[0]}</span></div>` : '—'}</td>
+            <td><span class="status-badge status-${statusClass(j.status)}">${j.status}</span></td>
+            <td><span class="priority-dot priority-${priorityClass(j.priority)}"></span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`}
+
+    <div class="section-head">
+      <div class="section-title">Recent Activity</div>
+    </div>
+    <table class="jobs-table">
+      <thead><tr><th>Client</th><th>Date</th><th>Type</th><th>Status</th></tr></thead>
+      <tbody>
+        ${recentJobs.map(j => `
+          <tr style="cursor:pointer;" onclick="viewJob(${j.id})">
+            <td><div style="font-weight:600;">${j.client}</div></td>
+            <td style="font-family:var(--mono);font-size:12px;color:var(--text2);">${formatDate(j.date)}</td>
+            <td><span style="font-size:12px;color:${jobTypeColor(j.type)};">${j.type}</span></td>
+            <td><span class="status-badge status-${statusClass(j.status)}">${j.status}</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+// ============================================================
+// SCHEDULE
+// ============================================================
+function renderSchedule() {
+  const d = viewDate;
+  document.getElementById('page-date').textContent = `${monthName(d)} ${d.getFullYear()}`;
+
+  document.getElementById('content').innerHTML = `
+    <div class="cal-nav">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+      <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      <div class="cal-month">${monthName(d)} ${d.getFullYear()}</div>
+      <div class="topbar-spacer"></div>
+      <div class="view-toggle">
+        <button class="view-btn ${currentView==='month'?'active':''}" onclick="setView('month')">Month</button>
+        <button class="view-btn ${currentView==='day'?'active':''}" onclick="setView('day')">Day</button>
+      </div>
+      ${currentView==='day' ? `<button class="btn btn-primary btn-sm" onclick="openJobModal()">+ New Job</button>` : ''}
+    </div>
+    <div id="cal-body"></div>
+  `;
+  if (currentView === 'month') renderMonthView();
+  else renderDayView();
+}
+
+function changeMonth(dir) {
+  viewDate.setMonth(viewDate.getMonth() + dir);
+  renderSchedule();
+}
+
+function setView(v) { currentView = v; renderSchedule(); }
+
+function renderMonthView() {
+  const d = viewDate;
+  const year = d.getFullYear(), month = d.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month+1, 0);
+  let startDow = firstDay.getDay(); // 0=Sun
+  const dows = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  let cells = [];
+  for (let i = 0; i < startDow; i++) {
+    const dd = new Date(firstDay); dd.setDate(dd.getDate() - (startDow - i));
+    cells.push({ date: dd, other: true });
+  }
+  for (let i = 1; i <= lastDay.getDate(); i++) {
+    cells.push({ date: new Date(year, month, i), other: false });
+  }
+  while (cells.length % 7 !== 0) {
+    const dd = new Date(lastDay); dd.setDate(dd.getDate() + (cells.length - lastDay.getDate() - startDow + 1));
+    cells.push({ date: dd, other: true });
+  }
+
+  const body = document.getElementById('cal-body');
+  body.innerHTML = `
+    <div class="month-grid">
+      <div class="month-header">
+        ${dows.map(dow => `<div class="month-dow">${dow}</div>`).join('')}
+      </div>
+      <div class="month-body">
+        ${cells.map(cell => {
+          const ds = cell.date.toISOString().split('T')[0];
+          const dayJobs = getJobsForDate(ds);
+          const isToday = ds === todayStr();
+          const urgent = dayJobs.some(j => j.priority === 'Urgent');
+          return `<div class="month-day ${cell.other?'other-month':''} ${isToday?'today':''}" onclick="jumpToDay('${ds}')">
+            <div class="day-num">${cell.date.getDate()}</div>
+            ${dayJobs.slice(0,3).map(j => {
+              const c = workerColor(j.workerId);
+              return `<div class="day-job-pill" style="background:${colorWithAlpha(c,0.2)};color:${c};border:1px solid ${colorWithAlpha(c,0.4)};" onclick="event.stopPropagation();viewJob(${j.id})">${j.start} ${j.client.split(' ')[0]}</div>`;
+            }).join('')}
+            ${dayJobs.length > 3 ? `<div class="day-more">+${dayJobs.length-3} more</div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function jumpToDay(ds) {
+  viewDate = new Date(ds);
+  currentView = 'day';
+  renderSchedule();
+}
+
+function renderDayView() {
+  const ds = viewDate.toISOString().split('T')[0];
+  document.getElementById('page-date').textContent = formatDate(ds);
+  const dayJobs = getJobsForDate(ds);
+  const hours = [];
+  for (let h = 6; h <= 18; h++) hours.push(h);
+
+  const prevDay = new Date(viewDate); prevDay.setDate(prevDay.getDate()-1);
+  const nextDay = new Date(viewDate); nextDay.setDate(nextDay.getDate()+1);
+
+  const body = document.getElementById('cal-body');
+  body.innerHTML = `
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+      <button class="cal-nav-btn" onclick="viewDate=new Date('${prevDay.toISOString().split('T')[0]}');renderSchedule()">‹ ${prevDay.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric'})}</button>
+      <button class="cal-nav-btn" onclick="viewDate=new Date('${nextDay.toISOString().split('T')[0]}');renderSchedule()">${nextDay.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric'})} ›</button>
+      <div class="topbar-spacer"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${workers.map(w => `<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><span style="width:10px;height:10px;border-radius:50%;background:${w.color};display:inline-block;"></span>${w.name.split(' ')[0]}</div>`).join('')}
+      </div>
+    </div>
+    <div style="position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <div style="display:grid;grid-template-columns:60px 1fr;">
+        <div class="time-col">
+          ${hours.map(h => `<div class="time-slot">${h < 12 ? h+'am' : h===12?'12pm':(h-12)+'pm'}</div>`).join('')}
+        </div>
+        <div style="position:relative;">
+          ${hours.map(() => `<div class="day-slot"></div>`).join('')}
+          ${dayJobs.map(j => {
+            const w = getWorker(j.workerId);
+            const [sh,sm] = j.start.split(':').map(Number);
+            const [eh,em] = j.end.split(':').map(Number);
+            const top = ((sh - 6) + sm/60) * 60;
+            const height = Math.max(((eh-sh) + (em-sm)/60) * 60, 28);
+            const c = w ? w.color : '#888';
+            return `<div class="job-block" style="top:${top}px;height:${height}px;background:${colorWithAlpha(c,0.15)};border-color:${colorWithAlpha(c,0.5)};color:${c};" onclick="viewJob(${j.id})">
+              <div class="job-block-title">${j.client}</div>
+              ${height > 40 ? `<div class="job-block-sub">${j.type} · ${j.start}–${j.end}</div>` : ''}
+              ${height > 55 && w ? `<div class="job-block-sub">${w.name.split(' ')[0]}</div>` : ''}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+    ${dayJobs.length === 0 ? `<div class="empty-state"><div class="empty-state-icon">🗓</div><div class="empty-state-text">No jobs scheduled for this day</div></div>` : ''}
+  `;
+}
+
+// ============================================================
+// JOBS
+// ============================================================
+let jobFilter = { status: '', priority: '', type: '', search: '' };
+
+function renderJobs() {
+  let filtered = jobs.filter(j => {
+    if (jobFilter.status && j.status !== jobFilter.status) return false;
+    if (jobFilter.priority && j.priority !== jobFilter.priority) return false;
+    if (jobFilter.type && j.type !== jobFilter.type) return false;
+    if (jobFilter.search) {
+      const s = jobFilter.search.toLowerCase();
+      if (!j.client.toLowerCase().includes(s) && !j.location.toLowerCase().includes(s)) return false;
+    }
+    return true;
+  }).sort((a,b) => {
+    if (a.priority === 'Urgent' && b.priority !== 'Urgent') return -1;
+    if (b.priority === 'Urgent' && a.priority !== 'Urgent') return 1;
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  document.getElementById('content').innerHTML = `
+    <div class="filters-bar">
+      <input class="search-input" placeholder="Search client or location…" oninput="jobFilter.search=this.value;renderJobs()" value="${jobFilter.search}">
+      <select class="filter-select" onchange="jobFilter.status=this.value;renderJobs()">
+        <option value="">All Status</option>
+        <option ${jobFilter.status==='Scheduled'?'selected':''}>Scheduled</option>
+        <option ${jobFilter.status==='In Progress'?'selected':''}>In Progress</option>
+        <option ${jobFilter.status==='Completed'?'selected':''}>Completed</option>
+        <option ${jobFilter.status==='On Hold'?'selected':''}>On Hold</option>
+        <option ${jobFilter.status==='Cancelled'?'selected':''}>Cancelled</option>
+      </select>
+      <select class="filter-select" onchange="jobFilter.priority=this.value;renderJobs()">
+        <option value="">All Priority</option>
+        <option ${jobFilter.priority==='Urgent'?'selected':''}>Urgent</option>
+        <option ${jobFilter.priority==='Normal'?'selected':''}>Normal</option>
+        <option ${jobFilter.priority==='Low'?'selected':''}>Low</option>
+      </select>
+      <select class="filter-select" onchange="jobFilter.type=this.value;renderJobs()">
+        <option value="">All Types</option>
+        <option ${jobFilter.type==='Service'?'selected':''}>Service</option>
+        <option ${jobFilter.type==='Install'?'selected':''}>Install</option>
+        <option ${jobFilter.type==='Maintenance'?'selected':''}>Maintenance</option>
+        <option ${jobFilter.type==='Breakdown'?'selected':''}>Breakdown</option>
+      </select>
+      <span style="font-size:12px;color:var(--text3);font-family:var(--mono);">${filtered.length} jobs</span>
+    </div>
+    ${filtered.length === 0 ? `<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">No jobs match your filters</div></div>` : `
+    <table class="jobs-table">
+      <thead><tr>
+        <th>Client</th><th>Date</th><th>Type</th><th>Time</th><th>Worker</th><th>Status</th><th>P</th><th>GCal</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${filtered.map(j => {
+          const w = getWorker(j.workerId);
+          return `<tr>
+            <td style="cursor:pointer;" onclick="viewJob(${j.id})">
+              <div style="font-weight:600;">${j.client}</div>
+              <div style="font-size:11px;color:var(--text3);">${j.location.split(',')[0]}</div>
+            </td>
+            <td style="font-family:var(--mono);font-size:12px;white-space:nowrap;">${formatDate(j.date)}</td>
+            <td><span style="font-size:12px;color:${jobTypeColor(j.type)};">${j.type}</span></td>
+            <td style="font-family:var(--mono);font-size:12px;white-space:nowrap;">${j.start}–${j.end}</td>
+            <td>${w ? `<div style="display:flex;align-items:center;gap:8px;"><div style="width:26px;height:26px;border-radius:50%;background:${w.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#000;">${initials(w.name)}</div><span style="font-size:12px;">${w.name.split(' ')[0]}</span></div>` : '—'}</td>
+            <td><span class="status-badge status-${statusClass(j.status)}">${j.status}</span></td>
+            <td><span class="priority-dot priority-${priorityClass(j.priority)}"></span></td>
+            <td>${j.gcalEventId ? `<span class="gcal-badge">● synced</span>` : `<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">—</span>`}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-ghost btn-sm" onclick="openJobModal(${j.id})" style="padding:3px 8px;font-size:11px;">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteJob(${j.id})" style="padding:3px 8px;font-size:11px;">Del</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`}
+  `;
+}
+
+// ============================================================
+// WORKERS
+// ============================================================
+function renderWorkers() {
+  document.getElementById('content').innerHTML = `
+    <div class="section-head" style="margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--text2);">${workers.length} team members · ${workers.filter(w=>w.gcalSync).length} Google Calendar synced</div>
+    </div>
+    <div class="workers-grid">
+      ${workers.map(w => {
+        const wJobs = jobs.filter(j => j.workerId === w.id && j.date === todayStr());
+        const skillTagClasses = ['tag-blue','tag-green','tag-purple','tag-amber'];
+        return `<div class="worker-card">
+          <div class="worker-header">
+            <div class="worker-avatar" style="background:${colorWithAlpha(w.color,0.2)};color:${w.color};">${initials(w.name)}</div>
+            <div>
+              <div class="worker-name">${w.name}</div>
+              <div class="worker-role">${w.role}</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:6px;">
+              <button class="btn btn-ghost btn-sm" onclick="openWorkerModal(${w.id})" style="padding:3px 8px;font-size:11px;">Edit</button>
+            </div>
+          </div>
+          <div class="worker-detail">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.72A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14v2.92z"/></svg>
+            ${w.phone}
+          </div>
+          <div class="worker-detail">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            ${w.email}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);margin-top:4px;">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+            ${wJobs.length} job${wJobs.length!==1?'s':''} today
+          </div>
+          <div class="worker-tags">
+            ${w.skills.map((s,i) => `<span class="tag ${skillTagClasses[i % skillTagClasses.length]}">${s}</span>`).join('')}
+          </div>
+          <div class="sync-toggle">
+            <label class="toggle">
+              <input type="checkbox" ${w.gcalSync?'checked':''} onchange="toggleWorkerSync(${w.id},this.checked)">
+              <div class="toggle-slider"></div>
+            </label>
+            <span class="sync-label">Calendar Sync ${w.gcalSync ? `<span class="gcal-badge" style="margin-left:4px;">● active</span>` : ''}</span>
+          </div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            ${w.gcalAccessToken
+              ? `<span class="gcal-badge">✓ Google connected</span>
+                 <button class="btn btn-ghost btn-sm" onclick="showGcalConfig()" style="padding:2px 8px;font-size:10px;">Manage</button>`
+              : `<button class="btn btn-ghost btn-sm" onclick="showGcalConfig();setTimeout(()=>startOAuthFlow(${w.id}),200)" style="padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:5px;${!w.gcalEmail?'opacity:0.5;':''}">
+                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2H3v16h5v4l4-4h5l4-4V2z"/></svg>
+                   Connect Google
+                 </button>`
+            }
+          </div>
+          ${w.gcalSync && w.gcalEmail ? `<div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:4px;">📅 ${w.gcalEmail}</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+async function toggleWorkerSync(id, val) {
+  const w = workers.find(x => x.id === id);
+  if (!w) return;
+  if (val && !w.gcalAccessToken) {
+    toast(`Connect ${w.name}'s Google account first — use the Connect button on their card`, '⚠');
+    setTimeout(() => renderWorkers(), 100);
+    return;
+  }
+  try {
+    await sbUpdate('workers', id, { gcal_sync: val });
+    w.gcalSync = val;
+    toast(val ? `Google Calendar sync enabled for ${w.name}` : `Sync disabled for ${w.name}`, '📅');
+    renderWorkers();
+  } catch(e) {
+    toast(`Error updating sync: ${e.message}`, '⚠');
+  }
+}
+
+// ============================================================
+// JOB MODAL
+// ============================================================
+function openJobModal(jobId = null) {
+  editingJobId = jobId;
+  const j = jobId ? jobs.find(x => x.id === jobId) : null;
+  const title = j ? 'Edit Job' : 'New Job';
+
+  const workerOptions = `<option value="">— Select worker —</option>` + workers.map(w => `<option value="${w.id}" ${j && j.workerId===w.id?'selected':''}>${w.name} (${w.role})</option>`).join('');
+
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-backdrop" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title">${title}</div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Client Name *</label>
+            <input class="form-input" id="f-client" placeholder="Client name" value="${j?.client||''}">
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Company</label>
+              <input class="form-input" id="f-company" placeholder="Company (optional)" value="${j?.company||''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input class="form-input" id="f-phone" placeholder="09 XXX XXXX" value="${j?.phone||''}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Job Location *</label>
+            <input class="form-input" id="f-location" placeholder="Full street address" value="${j?.location||''}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" id="f-desc" rows="2" placeholder="Describe the job…">${j?.description||''}</textarea>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Job Type *</label>
+              <select class="form-input" id="f-type">
+                <option ${j?.type==='Service'?'selected':''}>Service</option>
+                <option ${j?.type==='Install'?'selected':''}>Install</option>
+                <option ${j?.type==='Maintenance'?'selected':''}>Maintenance</option>
+                <option ${j?.type==='Breakdown'?'selected':''}>Breakdown</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Priority</label>
+              <select class="form-input" id="f-priority">
+                <option ${j?.priority==='Low'?'selected':''}>Low</option>
+                <option ${!j||j?.priority==='Normal'?'selected':''}>Normal</option>
+                <option ${j?.priority==='Urgent'?'selected':''}>Urgent</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Date *</label>
+              <input class="form-input" id="f-date" type="date" value="${j?.date||todayStr()}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Assigned Worker</label>
+              <select class="form-input" id="f-worker">${workerOptions}</select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Start Time</label>
+              <input class="form-input" id="f-start" type="time" value="${j?.start||'08:00'}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">End Time</label>
+              <input class="form-input" id="f-end" type="time" value="${j?.end||'10:00'}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Equipment Type</label>
+            <input class="form-input" id="f-equipment" placeholder="e.g. Split System AC, Cold Room" value="${j?.equipment||''}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-input" id="f-status">
+              <option ${j?.status==='Scheduled'?'selected':''}>Scheduled</option>
+              <option ${j?.status==='In Progress'?'selected':''}>In Progress</option>
+              <option ${j?.status==='Completed'?'selected':''}>Completed</option>
+              <option ${j?.status==='On Hold'?'selected':''}>On Hold</option>
+              <option ${j?.status==='Cancelled'?'selected':''}>Cancelled</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Calendar Reminder</label>
+            <select class="form-input" id="f-reminder">
+              <option value="-1" ${j?.reminderMinutes===-1?'selected':''}>No reminder</option>
+              <option value="10" ${j?.reminderMinutes===10?'selected':''}>10 minutes before</option>
+              <option value="30" ${j?.reminderMinutes===30?'selected':''}>30 minutes before</option>
+              <option value="60" ${!j||j?.reminderMinutes===60?'selected':''}>1 hour before</option>
+              <option value="120" ${j?.reminderMinutes===120?'selected':''}>2 hours before</option>
+              <option value="1440" ${j?.reminderMinutes===1440?'selected':''}>1 day before</option>
+              <option value="2880" ${j?.reminderMinutes===2880?'selected':''}>2 days before</option>
+            </select>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">Sends a popup + email notification to the assigned worker via Google Calendar</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-input" id="f-notes" rows="2" placeholder="Internal notes, access codes, special instructions…">${j?.notes||''}</textarea>
+          </div>
+          ${j ? `<div style="background:var(--bg3);border-radius:8px;padding:12px 14px;margin-top:4px;">
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">GOOGLE CALENDAR</div>
+            <div style="font-size:12px;color:var(--text2);">Event ID: <span style="font-family:var(--mono);color:var(--text);">${j.gcalEventId || 'Not synced'}</span></div>
+            ${getWorker(j.workerId)?.gcalSync ? `<div style="font-size:11px;color:var(--green);margin-top:4px;">✓ Will sync to ${getWorker(j.workerId).name}'s Google Calendar on save</div>` : `<div style="font-size:11px;color:var(--text3);margin-top:4px;">Calendar sync disabled for assigned worker</div>`}
+          </div>` : ''}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveJob()">
+            ${j ? 'Update Job' : 'Create Job'}
+            ${getWorker(parseInt(document.getElementById?.('f-worker')?.value))?.gcalSync ? ' + Sync' : ''}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function saveJob() {
+  const client = document.getElementById('f-client').value.trim();
+  const location = document.getElementById('f-location').value.trim();
+  if (!client || !location) { toast('Client name and location required', '⚠'); return; }
+
+  const workerId = parseInt(document.getElementById('f-worker').value);
+  const w = getWorker(workerId);
+  const data = {
+    client, company: document.getElementById('f-company').value.trim(),
+    phone: document.getElementById('f-phone').value.trim(),
+    location, description: document.getElementById('f-desc').value.trim(),
+    type: document.getElementById('f-type').value,
+    priority: document.getElementById('f-priority').value,
+    date: document.getElementById('f-date').value,
+    workerId,
+    start: document.getElementById('f-start').value,
+    end: document.getElementById('f-end').value,
+    equipment: document.getElementById('f-equipment').value.trim(),
+    status: document.getElementById('f-status').value,
+    notes: document.getElementById('f-notes').value.trim(),
+    reminderMinutes: parseInt(document.getElementById('f-reminder').value),
+    createdBy: editingJobId ? (jobs.find(j=>j.id===editingJobId)?.createdBy || currentUser?.id) : currentUser?.id,
+    createdByName: editingJobId ? (jobs.find(j=>j.id===editingJobId)?.createdByName || currentUser?.name) : currentUser?.name,
+  };
+
+  // Disable save button to prevent double submit
+  const btn = document.querySelector('.modal-footer .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+  try {
+    if (editingJobId) {
+      const existing = jobs.find(j => j.id === editingJobId);
+      const updated = await sbUpdate('jobs', editingJobId, jobToDb(data));
+      const mapped = mapJob({ ...jobToDb(data), id: editingJobId, gcal_event_id: existing?.gcalEventId });
+      const idx = jobs.findIndex(j => j.id === editingJobId);
+      jobs[idx] = mapped;
+      closeModal();
+      document.getElementById('urgent-badge').textContent = urgentCount();
+      refreshCurrentPage();
+      if (w?.gcalSync && w?.gcalAccessToken) {
+        if (existing?.gcalEventId) gcalUpdateEvent(w, existing.gcalEventId, jobs[idx]);
+        else gcalCreateEvent(w, jobs[idx]);
+      } else { toast('Job updated successfully', '✓'); }
+    } else {
+      const row = await sbInsert('jobs', jobToDb(data));
+      const newJob = mapJob(row);
+      jobs.unshift(newJob);
+      closeModal();
+      document.getElementById('urgent-badge').textContent = urgentCount();
+      refreshCurrentPage();
+      if (w?.gcalSync && w?.gcalAccessToken) gcalCreateEvent(w, newJob);
+      else toast('Job created successfully', '✓');
+    }
+  } catch(e) {
+    toast(`Error saving job: ${e.message}`, '⚠');
+    if (btn) { btn.disabled = false; btn.textContent = editingJobId ? 'Update Job' : 'Create Job'; }
+  }
+}
+
+async function deleteJob(id) {
+  if (!confirm('Delete this job? This will also remove the Google Calendar event.')) return;
+  const j = jobs.find(x => x.id === id);
+  const w = j ? getWorker(j.workerId) : null;
+  try {
+    await sbDelete('jobs', id);
+    jobs = jobs.filter(x => x.id !== id);
+    document.getElementById('urgent-badge').textContent = urgentCount();
+    refreshCurrentPage();
+    if (w?.gcalSync && w?.gcalAccessToken && j?.gcalEventId) gcalDeleteEvent(w, j.gcalEventId);
+    else toast('Job deleted', '🗑');
+  } catch(e) {
+    toast(`Error deleting job: ${e.message}`, '⚠');
+  }
+}
+
+// ============================================================
+// VIEW JOB DETAIL
+// ============================================================
+function viewJob(id) {
+  const j = jobs.find(x => x.id === id);
+  if (!j) return;
+  const w = getWorker(j.workerId);
+  const c = w ? w.color : '#888';
+
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-backdrop" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()" style="width:560px;">
+        <div class="modal-header">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <span class="status-badge status-${statusClass(j.status)}">${j.status}</span>
+              <span style="font-size:12px;color:${jobTypeColor(j.type)};">${j.type}</span>
+              ${j.priority === 'Urgent' ? `<span style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(239,68,68,0.2);color:var(--red);font-family:var(--mono);">URGENT</span>` : ''}
+            </div>
+            <div class="modal-title">${j.client}</div>
+          </div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-section">
+            <div class="detail-row"><span class="detail-key">Date</span><span class="detail-val">${formatDate(j.date)}</span></div>
+            <div class="detail-row"><span class="detail-key">Time</span><span class="detail-val" style="font-family:var(--mono);">${j.start} – ${j.end}</span></div>
+            <div class="detail-row"><span class="detail-key">Location</span><span class="detail-val"><a href="https://maps.google.com?q=${encodeURIComponent(j.location)}" target="_blank" style="color:var(--accent);text-decoration:none;">${j.location} ↗</a></span></div>
+            ${j.phone ? `<div class="detail-row"><span class="detail-key">Phone</span><span class="detail-val"><a href="tel:${j.phone}" style="color:var(--accent);text-decoration:none;">${j.phone}</a></span></div>` : ''}
+            ${j.company ? `<div class="detail-row"><span class="detail-key">Company</span><span class="detail-val">${j.company}</span></div>` : ''}
+            ${j.createdByName ? `<div class="detail-row"><span class="detail-key">Added by</span><span class="detail-val" style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--bg4);color:var(--text2);font-family:var(--mono);">${j.createdByName}</span></span></div>` : ''}
+          </div>
+          <div class="detail-section">
+            <div class="detail-row"><span class="detail-key">Description</span><span class="detail-val">${j.description || '—'}</span></div>
+            ${j.equipment ? `<div class="detail-row"><span class="detail-key">Equipment</span><span class="detail-val">${j.equipment}</span></div>` : ''}
+            ${j.notes ? `<div class="detail-row"><span class="detail-key">Notes</span><span class="detail-val" style="color:var(--amber);">${j.notes}</span></div>` : ''}
+          </div>
+          ${w ? `<div class="detail-section" style="display:flex;align-items:center;gap:12px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:${colorWithAlpha(c,0.25)};color:${c};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">${initials(w.name)}</div>
+            <div>
+              <div style="font-weight:600;">${w.name}</div>
+              <div style="font-size:12px;color:var(--text3);">${w.role} · <a href="tel:${w.phone}" style="color:var(--text2);text-decoration:none;">${w.phone}</a></div>
+            </div>
+            ${w.gcalSync ? `<div class="gcal-badge" style="margin-left:auto;">📅 Synced</div>` : ''}
+          </div>` : ''}
+          ${j.gcalEventId ? `<div style="background:rgba(66,133,244,0.08);border:1px solid rgba(66,133,244,0.2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:4px;">
+            <span style="font-size:18px;">📅</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#7cb3ff;">Google Calendar Synced</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Event ID: ${j.gcalEventId}</div>
+            </div>
+          </div>` : ''}
+        </div>
+        <div class="modal-footer" style="justify-content:space-between;">
+          <div style="display:flex;gap:8px;">
+            <select class="form-input" id="quick-status" style="width:auto;padding:6px 10px;font-size:12px;" onchange="quickUpdateStatus(${j.id},this.value)">
+              <option ${j.status==='Scheduled'?'selected':''}>Scheduled</option>
+              <option ${j.status==='In Progress'?'selected':''}>In Progress</option>
+              <option ${j.status==='Completed'?'selected':''}>Completed</option>
+              <option ${j.status==='On Hold'?'selected':''}>On Hold</option>
+              <option ${j.status==='Cancelled'?'selected':''}>Cancelled</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-danger btn-sm" onclick="closeModal();deleteJob(${j.id})">Delete</button>
+            <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+            <button class="btn btn-primary" onclick="closeModal();openJobModal(${j.id})">Edit Job</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function quickUpdateStatus(jobId, status) {
+  const j = jobs.find(x => x.id === jobId);
+  if (j) { j.status = status; toast(`Status updated to ${status}`, '✓'); }
+  document.getElementById('urgent-badge').textContent = urgentCount();
+}
+
+// ============================================================
+// WORKER MODAL
+// ============================================================
+function openWorkerModal(workerId = null) {
+  editingWorkerId = workerId;
+  const w = workerId ? workers.find(x => x.id === workerId) : null;
+
+  const skillsList = ['Refrigeration','Air Conditioning','Electrical','HVAC Install'];
+  const skillsChecks = skillsList.map(s => `
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:6px;">
+      <input type="checkbox" id="skill-${s.replace(/\s+/g,'')}" ${w?.skills?.includes(s)?'checked':''} style="width:14px;height:14px;accent-color:var(--accent);">
+      ${s}
+    </label>`).join('');
+
+  const colors = ['#00d4ff','#a855f7','#f59e0b','#22c55e','#ef4444','#f97316','#3b82f6','#ec4899'];
+
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-backdrop" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title">${w ? 'Edit Worker' : 'Add Worker'}</div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input class="form-input" id="wf-name" value="${w?.name||''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Role</label>
+              <select class="form-input" id="wf-role">
+                <option ${w?.role==='Technician'?'selected':''}>Technician</option>
+                <option ${w?.role==='Installer'?'selected':''}>Installer</option>
+                <option ${w?.role==='Apprentice'?'selected':''}>Apprentice</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input class="form-input" id="wf-phone" value="${w?.phone||''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" id="wf-email" type="email" value="${w?.email||''}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Calendar Colour</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+              ${colors.map(c => `<div style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${w?.color===c?'#fff':'transparent'};box-sizing:border-box;" onclick="selectWorkerColor('${c}',this)" id="wcolor-${c.slice(1)}"></div>`).join('')}
+            </div>
+            <input type="hidden" id="wf-color" value="${w?.color||'#00d4ff'}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Skills</label>
+            ${skillsChecks}
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:14px;margin-top:8px;">
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;letter-spacing:1.5px;">GOOGLE CALENDAR INTEGRATION</div>
+            <div class="form-group" style="margin-bottom:10px;">
+              <label class="form-label">Google Calendar Email</label>
+              <input class="form-input" id="wf-gcalemail" placeholder="worker@gmail.com" value="${w?.gcalEmail||''}">
+            </div>
+            <div class="form-group" style="margin-bottom:10px;">
+              <label class="form-label">Calendar ID</label>
+              <input class="form-input" id="wf-gcalid" placeholder="calendar.id@group.calendar.google.com" value="${w?.gcalId||''}">
+            </div>
+            <div class="sync-toggle">
+              <label class="toggle">
+                <input type="checkbox" id="wf-gcalsync" ${w?.gcalSync?'checked':''}>
+                <div class="toggle-slider"></div>
+              </label>
+              <span class="sync-label">Enable Google Calendar Sync</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveWorker()">${w ? 'Update Worker' : 'Add Worker'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function selectWorkerColor(color, el) {
+  document.querySelectorAll('[id^="wcolor-"]').forEach(d => d.style.borderColor = 'transparent');
+  el.style.borderColor = '#fff';
+  document.getElementById('wf-color').value = color;
+}
+
+async function saveWorker() {
+  const name = document.getElementById('wf-name').value.trim();
+  if (!name) { toast('Worker name required', '⚠'); return; }
+  const skillsList = ['Refrigeration','Air Conditioning','Electrical','HVAC Install'];
+  const skills = skillsList.filter(s => document.getElementById('skill-'+s.replace(/\s+/g,''))?.checked);
+
+  const data = {
+    name,
+    role: document.getElementById('wf-role').value,
+    phone: document.getElementById('wf-phone').value.trim(),
+    email: document.getElementById('wf-email').value.trim(),
+    color: document.getElementById('wf-color').value,
+    skills,
+    gcalEmail: document.getElementById('wf-gcalemail').value.trim(),
+    gcalId: document.getElementById('wf-gcalid').value.trim(),
+    gcalSync: document.getElementById('wf-gcalsync').checked,
+  };
+
+  const btn = document.querySelector('.modal-footer .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+  try {
+    if (editingWorkerId) {
+      const existing = workers.find(w => w.id === editingWorkerId);
+      await sbUpdate('workers', editingWorkerId, workerToDb(data));
+      const idx = workers.findIndex(w => w.id === editingWorkerId);
+      workers[idx] = { ...existing, ...data };
+      toast('Worker updated successfully', '✓');
+    } else {
+      const row = await sbInsert('workers', workerToDb(data));
+      workers.push(mapWorker(row));
+      toast(`${name} added to the team`, '✓');
+    }
+    closeModal();
+    renderWorkers();
+  } catch(e) {
+    toast(`Error saving worker: ${e.message}`, '⚠');
+    if (btn) { btn.disabled = false; btn.textContent = editingWorkerId ? 'Update Worker' : 'Add Worker'; }
+  }
+}
+
+// ============================================================
+// GOOGLE OAUTH CONFIG
+// ============================================================
+// Client ID is loaded from Supabase settings table on app start
+let GCAL_CLIENT_ID = '';
+const GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+const GCAL_REDIRECT = 'https://excelscheduling.io';
+
+function showGcalConfig() {
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-backdrop" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()" style="width:580px;">
+        <div class="modal-header">
+          <div class="modal-title">Google Calendar Setup</div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+
+          <!-- Step 1: OAuth Client ID -->
+          <div style="background:rgba(66,133,244,0.08);border:1px solid rgba(66,133,244,0.2);border-radius:8px;padding:14px 16px;margin-bottom:16px;">
+            <div style="font-size:12px;font-weight:600;color:#7cb3ff;font-family:var(--mono);margin-bottom:10px;letter-spacing:1px;">STEP 1 — GOOGLE CLOUD CONSOLE</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.8;">
+              <div>1. Go to <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--accent);">console.cloud.google.com → APIs & Services → Credentials</a></div>
+              <div>2. Click <strong style="color:var(--text);">Create Credentials → OAuth 2.0 Client ID</strong></div>
+              <div>3. Application type: <strong style="color:var(--text);">Web application</strong></div>
+              <div>4. Add Authorised JavaScript origin: <code style="background:var(--bg);padding:1px 6px;border-radius:3px;font-size:11px;color:var(--amber);">${window.location.origin}</code></div>
+              <div>5. Enable <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" style="color:var(--accent);">Google Calendar API</a></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">OAuth 2.0 Client ID</label>
+            <input class="form-input" id="cfg-clientid" placeholder="XXXXXXXX.apps.googleusercontent.com" value="${GCAL_CLIENT_ID}" style="font-family:var(--mono);font-size:12px;">
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">Paste your Client ID from Google Cloud Console. It ends in .apps.googleusercontent.com</div>
+          </div>
+
+          <!-- Step 2: Per-worker auth -->
+          <div style="background:var(--bg3);border-radius:8px;padding:14px 16px;margin-top:8px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text2);font-family:var(--mono);margin-bottom:10px;letter-spacing:1px;">STEP 2 — CONNECT EACH WORKER'S GOOGLE ACCOUNT</div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">After saving the Client ID above, each worker must sign in with Google to grant calendar access. Their OAuth token is stored in memory for this session.</div>
+            <div id="worker-oauth-list">
+              ${workers.map(w => `
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+                  <div style="width:30px;height:30px;border-radius:50%;background:${colorWithAlpha(w.color,0.2)};color:${w.color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${initials(w.name)}</div>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:600;">${w.name}</div>
+                    <div style="font-size:11px;color:var(--text3);">${w.gcalEmail || 'No email set — edit worker profile first'}</div>
+                  </div>
+                  ${w.gcalAccessToken
+                    ? `<span class="gcal-badge">✓ connected</span>
+                       <button class="btn btn-danger btn-sm" onclick="revokeWorkerToken(${w.id})" style="padding:3px 8px;font-size:11px;">Disconnect</button>`
+                    : `<button class="btn btn-ghost btn-sm" onclick="startOAuthFlow(${w.id})" style="padding:4px 10px;font-size:12px;display:flex;align-items:center;gap:6px;"
+                         ${!w.gcalEmail ? 'disabled title="Set email in worker profile first"' : ''}>
+                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2H3v16h5v4l4-4h5l4-4V2zM11 11V7M16 11V7"/></svg>
+                         Connect Google
+                       </button>`
+                  }
+                </div>`).join('')}
+            </div>
+          </div>
+
+          <!-- Event format reference -->
+          <div style="margin-top:14px;background:var(--bg3);border-radius:8px;padding:12px 14px;">
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px;letter-spacing:1px;">CALENDAR EVENT FORMAT</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.9;">
+              <div><span style="color:var(--accent);">Title:</span> "Client Name — Job Type"</div>
+              <div><span style="color:var(--accent);">Location:</span> Full job address</div>
+              <div><span style="color:var(--accent);">Time:</span> Job start → end (NZST)</div>
+              <div><span style="color:var(--accent);">Description:</span> Client · Phone · Company · Equipment · Notes</div>
+              <div><span style="color:var(--accent);">Endpoint:</span> POST /calendar/v3/calendars/{calendarId}/events</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveGcalConfig()">Save Client ID</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Keep old entry point working
+function showGcalInfo() { showGcalConfig(); }
+
+async function saveGcalConfig() {
+  const val = document.getElementById('cfg-clientid').value.trim();
+  if (!val) { toast('Paste your OAuth Client ID first', '⚠'); return; }
+  try {
+    // Upsert into settings table — saves for ALL users
+    await fetch(`${SUPABASE_URL}/rest/v1/settings`, {
+      method: 'POST',
+      headers: { ...sbHeaders, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ key: 'gcal_client_id', value: val }),
+    });
+    GCAL_CLIENT_ID = val;
+    toast('Client ID saved for all users ✓', '📅');
+    closeModal();
+    renderWorkers();
+  } catch(e) {
+    toast(`Error saving Client ID: ${e.message}`, '⚠');
+  }
+}
+
+// ============================================================
+// OAUTH 2.0 FLOW (implicit / token grant via popup)
+// ============================================================
+let oauthPopupTimer = null;
+let pendingOAuthWorkerId = null;
+
+function startOAuthFlow(workerId) {
+  if (!GCAL_CLIENT_ID) {
+    toast('Set your Google OAuth Client ID first — click "Sync Calendar" in the toolbar', '⚠');
+    return;
+  }
+  const w = workers.find(x => x.id === workerId);
+  if (!w) return;
+  if (!w.gcalEmail) { toast('Set the worker\'s Google email in their profile first', '⚠'); return; }
+
+  pendingOAuthWorkerId = workerId;
+
+  const params = new URLSearchParams({
+    client_id: GCAL_CLIENT_ID,
+    redirect_uri: GCAL_REDIRECT,
+    response_type: 'token',
+    scope: GCAL_SCOPES,
+    login_hint: w.gcalEmail,
+    prompt: 'consent',
+    state: `worker_${workerId}`,
+  });
+
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+  const popup = window.open(authUrl, 'gcal_oauth', 'width=520,height=640,left=200,top=100');
+
+  if (!popup) {
+    toast('Popup blocked — allow popups for this page and try again', '⚠');
+    return;
+  }
+
+  toast(`Waiting for ${w.name} to authorise Google Calendar…`, '🔐');
+
+  // Poll popup URL for the access_token fragment
+  clearInterval(oauthPopupTimer);
+  oauthPopupTimer = setInterval(() => {
+    try {
+      if (popup.closed) {
+        clearInterval(oauthPopupTimer);
+        toast('OAuth window closed — try again', '⚠');
+        return;
+      }
+      const hash = popup.location.hash;
+      if (hash && hash.includes('access_token')) {
+        clearInterval(oauthPopupTimer);
+        popup.close();
+        const tokenParams = new URLSearchParams(hash.slice(1));
+        const accessToken = tokenParams.get('access_token');
+        const expiresIn = parseInt(tokenParams.get('expires_in') || '3600');
+        handleOAuthToken(workerId, accessToken, expiresIn);
+      }
+    } catch(e) {
+      // Cross-origin — popup still on Google, keep polling
+    }
+  }, 500);
+}
+
+async function handleOAuthToken(workerId, accessToken, expiresIn) {
+  const w = workers.find(x => x.id === workerId);
+  if (!w) return;
+  const expiry = Date.now() + expiresIn * 1000;
+  w.gcalAccessToken = accessToken;
+  w.gcalTokenExpiry = expiry;
+  w.gcalSync = true;
+  // Persist token to Supabase so it survives page reloads & deployments
+  try {
+    await sbUpdate('workers', workerId, {
+      gcal_access_token: accessToken,
+      gcal_token_expiry: expiry,
+      gcal_sync: true,
+    });
+  } catch(e) {
+    console.warn('Could not persist token to Supabase:', e.message);
+  }
+  toast(`✓ ${w.name} connected to Google Calendar`, '📅');
+  if (currentPage === 'workers') renderWorkers();
+  const container = document.getElementById('modal-container');
+  if (container.innerHTML) showGcalConfig();
+}
+
+async function revokeWorkerToken(workerId) {
+  const w = workers.find(x => x.id === workerId);
+  if (!w) return;
+  if (w.gcalAccessToken) {
+    fetch(`https://oauth2.googleapis.com/revoke?token=${w.gcalAccessToken}`, { method: 'POST' }).catch(() => {});
+  }
+  w.gcalAccessToken = null;
+  w.gcalTokenExpiry = null;
+  w.gcalSync = false;
+  // Clear token from Supabase
+  try {
+    await sbUpdate('workers', workerId, {
+      gcal_access_token: null,
+      gcal_token_expiry: null,
+      gcal_sync: false,
+    });
+  } catch(e) {
+    console.warn('Could not clear token from Supabase:', e.message);
+  }
+  toast(`${w.name} disconnected from Google Calendar`, '🔌');
+  if (currentPage === 'workers') renderWorkers();
+  showGcalConfig();
+}
+
+function checkTokenValid(w) {
+  if (!w.gcalAccessToken) return false;
+  if (w.gcalTokenExpiry && Date.now() > w.gcalTokenExpiry - 60000) {
+    toast(`${w.name}'s Google token has expired — please reconnect in Calendar Setup`, '⚠');
+    w.gcalAccessToken = null;
+    w.gcalTokenExpiry = null;
+    w.gcalSync = false;
+    // Clear expired token from Supabase
+    sbUpdate('workers', w.id, {
+      gcal_access_token: null,
+      gcal_token_expiry: null,
+      gcal_sync: false,
+    }).catch(() => {});
+    if (currentPage === 'workers') renderWorkers();
+    return false;
+  }
+  return true;
+}
+
+// ============================================================
+// GOOGLE CALENDAR API CALLS
+// ============================================================
+function buildCalendarEvent(job) {
+  const w = getWorker(job.workerId);
+  const description = [
+    `Client: ${job.client}`,
+    job.company ? `Company: ${job.company}` : '',
+    job.phone ? `Phone: ${job.phone}` : '',
+    `Location: ${job.location}`,
+    `Job Type: ${job.type}`,
+    job.equipment ? `Equipment: ${job.equipment}` : '',
+    `Priority: ${job.priority}`,
+    `Status: ${job.status}`,
+    job.description ? `\nDescription:\n${job.description}` : '',
+    job.notes ? `\nNotes:\n${job.notes}` : '',
+    w ? `\nAssigned to: ${w.name} (${w.role})` : '',
+    '\n— Synced by excelscheduling.io —',
+  ].filter(Boolean).join('\n');
+
+  // Build RFC3339 datetimes in local NZ time
+  const startDT = `${job.date}T${job.start}:00`;
+  const endDT   = `${job.date}T${job.end}:00`;
+
+  // Build reminders — popup (in-app) + push notification to phone
+  const reminderMinutes = job.reminderMinutes !== undefined ? job.reminderMinutes : 60;
+  const reminders = reminderMinutes === -1 ? { useDefault: false, overrides: [] } : {
+    useDefault: false,
+    overrides: [
+      { method: 'popup', minutes: reminderMinutes },
+      { method: 'email', minutes: reminderMinutes },
+    ],
+  };
+
+  return {
+    summary: `${job.client} — ${job.type}`,
+    location: job.location,
+    description,
+    start: { dateTime: startDT, timeZone: 'Pacific/Auckland' },
+    end:   { dateTime: endDT,   timeZone: 'Pacific/Auckland' },
+    colorId: job.priority === 'Urgent' ? '11' : job.type === 'Breakdown' ? '4' : job.type === 'Install' ? '7' : '1',
+    reminders,
+  };
+}
+
+async function gcalCreateEvent(w, job) {
+  if (!checkTokenValid(w)) return;
+  const calId = encodeURIComponent(w.gcalId || 'primary');
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${calId}/events`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${w.gcalAccessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(buildCalendarEvent(job)),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || res.statusText);
+    }
+    const data = await res.json();
+    // Store the real Google event ID back on the job in Supabase
+    const idx = jobs.findIndex(j => j.id === job.id);
+    if (idx !== -1) {
+      jobs[idx].gcalEventId = data.id;
+      await sbUpdate('jobs', job.id, { gcal_event_id: data.id }).catch(() => {});
+    }
+    toast(`📅 Event created in ${w.name}'s Google Calendar`, '✓');
+    refreshCurrentPage();
+  } catch(e) {
+    toast(`GCal error: ${e.message}`, '⚠');
+  }
+}
+
+async function gcalUpdateEvent(w, eventId, job) {
+  if (!checkTokenValid(w)) return;
+  const calId = encodeURIComponent(w.gcalId || 'primary');
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${eventId}`;
+  try {
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${w.gcalAccessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(buildCalendarEvent(job)),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      // If event not found (e.g. deleted manually in Google), create a new one
+      if (res.status === 404) { await gcalCreateEvent(w, job); return; }
+      throw new Error(err.error?.message || res.statusText);
+    }
+    toast(`📅 Google Calendar event updated for ${w.name}`, '✓');
+  } catch(e) {
+    toast(`GCal error: ${e.message}`, '⚠');
+  }
+}
+
+async function gcalDeleteEvent(w, eventId) {
+  if (!checkTokenValid(w)) { toast('Job deleted (calendar token expired)', '🗑'); return; }
+  const calId = encodeURIComponent(w.gcalId || 'primary');
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${calId}/events/${eventId}`;
+  try {
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${w.gcalAccessToken}` },
+    });
+    if (res.status === 410 || res.status === 404) {
+      toast('Job deleted (event was already removed from Google Calendar)', '🗑');
+      return;
+    }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || res.statusText);
+    }
+    toast(`🗑 Job deleted & removed from ${w.name}'s Google Calendar`, '✓');
+  } catch(e) {
+    toast(`Job deleted (GCal error: ${e.message})`, '🗑');
+  }
+}
+
+// ============================================================
+// UTIL: refresh current page view
+// ============================================================
+function refreshCurrentPage() {
+  if (currentPage === 'jobs') renderJobs();
+  else if (currentPage === 'dashboard') renderDashboard();
+  else if (currentPage === 'schedule') renderSchedule();
+}
+
+// ============================================================
+// USERS PAGE (admin only)
+// ============================================================
+async function renderUsers() {
+  document.getElementById('content').innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:200px;"><div style="font-family:var(--mono);font-size:12px;color:var(--text3);">Loading users…</div></div>`;
+  let userList = [];
+  try {
+    userList = await sbGet('users', 'order=role.asc,name.asc&select=id,name,email,role,created_at');
+  } catch(e) {
+    toast(`Error loading users: ${e.message}`, '⚠'); return;
+  }
+
+  document.getElementById('content').innerHTML = `
+    <div class="section-head">
+      <div style="font-size:13px;color:var(--text2);">${userList.length} users · Only admin can manage access</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="openChangePasswordModal()">🔑 Change My Password</button>
+        <button class="btn btn-primary btn-sm" onclick="openUserModal()">+ Add User</button>
+      </div>
+    </div>
+    <table class="users-table">
+      <thead><tr>
+        <th>Name</th><th>Email</th><th>Role</th><th>Added</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${userList.map(u => `
+          <tr>
+            <td style="font-weight:600;">${u.name} ${u.id === currentUser?.id ? '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">(you)</span>' : ''}</td>
+            <td style="color:var(--text2);">${u.email}</td>
+            <td><span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-administrator'}">${u.role}</span></td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">${new Date(u.created_at).toLocaleDateString('en-NZ')}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                ${u.id !== currentUser?.id ? `
+                  <button class="btn btn-ghost btn-sm" onclick="openUserModal(${u.id},'${u.name}','${u.email}','${u.role}')" style="padding:3px 8px;font-size:11px;">Edit</button>
+                  ${u.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id},'${u.name}')" style="padding:3px 8px;font-size:11px;">Remove</button>` : ''}
+                ` : ''}
+              </div>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:16px;background:var(--bg3);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px;letter-spacing:1px;">ACCESS LEVELS</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="role-badge role-admin">admin</span>
+          <span style="font-size:13px;color:var(--text2);">Full access — manage workers, calendar setup, users, jobs</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="role-badge role-administrator">administrator</span>
+          <span style="font-size:13px;color:var(--text2);">Can add and delete jobs — cannot edit workers or settings</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openChangePasswordModal() {
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-backdrop" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()" style="width:420px;">
+        <div class="modal-header">
+          <div class="modal-title">Change My Password</div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">Changing password for <strong style="color:var(--text);">${currentUser.name}</strong> (${currentUser.email})</div>
+          <div class="form-group">
+            <label class="form-label">Current Password *</label>
+            <input class="form-input" id="cp-current" type="password" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password *</label>
+            <input class="form-input" id="cp-new" type="password" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password *</label>
+            <input class="form-input" id="cp-confirm" type="password" placeholder="••••••••">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="doChangePassword()">Update Password</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function doChangePassword() {
+  const current = document.getElementById('cp-current').value;
+  const newPw = document.getElementById('cp-new').value;
+  const confirm = document.getElementById('cp-confirm').value;
+
+  if (!current || !newPw || !confirm) { toast('All fields are required', '⚠'); return; }
+  if (newPw !== confirm) { toast('New passwords do not match', '⚠'); return; }
+  if (newPw.length < 6) { toast('Password must be at least 6 characters', '⚠'); return; }
+
+  const btn = document.querySelector('.modal-footer .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Updating…'; }
+
+  try {
+    // Verify current password in JS to avoid URL encoding issues
+    const currentHash = await sha256(current);
+    const rows = await sbGet('users', `id=eq.${currentUser.id}&select=password_hash`);
+    if (rows.length === 0 || rows[0].password_hash.toLowerCase() !== currentHash.toLowerCase()) {
+      toast('Current password is incorrect', '⚠');
+      if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
+      return;
+    }
+    const newHash = await sha256(newPw);
+    await sbUpdate('users', currentUser.id, { password_hash: newHash });
+    toast('Password updated successfully ✓', '✓');
+    closeModal();
+  } catch(e) {
+    toast(`Error: ${e.message}`, '⚠');
+    if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
+  }
+}
+
+  const isEdit = !!id;
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-backdrop" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()" style="width:460px;">
+        <div class="modal-header">
+          <div class="modal-title">${isEdit ? 'Edit User' : 'Add User'}</div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input class="form-input" id="uf-name" value="${name}" placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" id="uf-email" type="email" value="${email}" placeholder="email@excel.co.nz" ${isEdit ? 'readonly style="opacity:0.6;"' : ''}>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <select class="form-input" id="uf-role">
+              <option value="administrator" ${role==='administrator'?'selected':''}>Administrator — can add/delete jobs</option>
+              <option value="admin" ${role==='admin'?'selected':''}>Admin — full access</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">${isEdit ? 'New Password (leave blank to keep current)' : 'Password *'}</label>
+            <input class="form-input" id="uf-password" type="password" placeholder="${isEdit ? 'Leave blank to keep current' : 'Set a password'}">
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text3);">
+            ${isEdit ? 'Editing an existing user. Email cannot be changed.' : 'The new user will be able to sign in immediately with these credentials.'}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveUser(${id || 'null'})">${isEdit ? 'Update User' : 'Add User'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function saveUser(id) {
+  const name = document.getElementById('uf-name').value.trim();
+  const email = document.getElementById('uf-email').value.trim().toLowerCase();
+  const role = document.getElementById('uf-role').value;
+  const password = document.getElementById('uf-password').value;
+
+  if (!name) { toast('Name is required', '⚠'); return; }
+  if (!id && !email) { toast('Email is required', '⚠'); return; }
+  if (!id && !password) { toast('Password is required', '⚠'); return; }
+
+  const btn = document.querySelector('.modal-footer .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+  try {
+    if (id) {
+      const updates = { name, role };
+      if (password) updates.password_hash = await sha256(password);
+      await sbUpdate('users', id, updates);
+      toast(`${name} updated`, '✓');
+    } else {
+      const hash = await sha256(password);
+      await sbInsert('users', { name, email, role, password_hash: hash });
+      toast(`${name} added as ${role}`, '✓');
+    }
+    closeModal();
+    renderUsers();
+  } catch(e) {
+    toast(`Error: ${e.message}`, '⚠');
+    if (btn) { btn.disabled = false; btn.textContent = id ? 'Update User' : 'Add User'; }
+  }
+}
+
+async function deleteUser(id, name) {
+  if (!confirm(`Remove ${name}? They will no longer be able to sign in.`)) return;
+  try {
+    await sbDelete('users', id);
+    toast(`${name} removed`, '🗑');
+    renderUsers();
+  } catch(e) {
+    toast(`Error: ${e.message}`, '⚠');
+  }
+}
+
+
+function closeModal(event) {
+  if (event && event.target !== event.currentTarget) return;
+  document.getElementById('modal-container').innerHTML = '';
+}
+
+// ============================================================
+// INIT — check session then load data
+// ============================================================
+async function initApp() {
+  // Show loading state
+  document.getElementById('content').innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px;">
+      <div style="width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--text3);">Connecting to database…</div>
+    </div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+  `;
+
+  try {
+    const [workerRows, jobRows, settingRows] = await Promise.all([
+      sbGet('workers', 'order=name.asc'),
+      sbGet('jobs', 'order=date.desc,start_time.asc'),
+      sbGet('settings', 'key=eq.gcal_client_id'),
+    ]);
+    workers = workerRows.map(mapWorker);
+    jobs = jobRows.map(mapJob);
+    if (settingRows.length > 0 && settingRows[0].value) {
+      GCAL_CLIENT_ID = settingRows[0].value;
+    }
+  } catch(e) {
+    document.getElementById('content').innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:12px;">
+        <div style="font-size:32px;">⚠</div>
+        <div style="font-family:var(--condensed);font-size:20px;color:var(--red);">Database connection failed</div>
+        <div style="font-size:13px;color:var(--text3);font-family:var(--mono);">${e.message}</div>
+        <button class="btn btn-primary" onclick="initApp()">Retry</button>
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById('page-date').textContent = today.toLocaleDateString('en-NZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('urgent-badge').textContent = urgentCount();
+  showPage('dashboard');
+}
+
+initApp();
+</script>
+
+</body>
+</html>
